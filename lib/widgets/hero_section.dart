@@ -16,7 +16,8 @@ class HeroSection extends StatefulWidget {
   State<HeroSection> createState() => _HeroSectionState();
 }
 
-class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin {
+class _HeroSectionState extends State<HeroSection>
+    with TickerProviderStateMixin {
   late VideoPlayerController _videoController;
   late AnimationController _glowController;
   bool _videoReady = false;
@@ -30,9 +31,9 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
     )..repeat(reverse: true);
 
     _videoController = VideoPlayerController.networkUrl(
-      Uri.parse('https://stream.mux.com/tLkHO1qZoaaQOUeVWo8hEBeGQfySP02EPS02BmnNFyXys.m3u8'),
-    )
-      ..initialize().then((_) {
+      Uri.parse(
+          'https://stream.mux.com/tLkHO1qZoaaQOUeVWo8hEBeGQfySP02EPS02BmnNFyXys.m3u8'),
+    )..initialize().then((_) {
         if (mounted) {
           setState(() => _videoReady = true);
           _videoController.setLooping(true);
@@ -106,7 +107,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
             left: 0,
             right: 0,
             height: size.height * 0.35,
-            child: DecoratedBox(
+            child: const DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.bottomCenter,
@@ -118,21 +119,21 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
           ),
 
           // ── Vertical Grid Lines (desktop only) ────────────────
+          // ── Vertical Grid Lines (desktop only) ────────────────
           if (isDesktop)
             Positioned.fill(
-              child: Row(
+              child: Stack(
                 children: [0.25, 0.5, 0.75].map((frac) {
                   return Positioned(
                     left: size.width * frac,
                     top: 0,
                     bottom: 0,
-                    width: 1,
                     child: Container(
                       width: 1,
                       color: AppColors.gridLine,
                     ),
                   );
-                }).toList().cast<Widget>(),
+                }).toList(),
               ),
             ),
 
@@ -157,8 +158,8 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
                           blurRadius: 80 + t * 20,
                           spreadRadius: 20,
                         ),
-                        BoxShadow(
-                          color: const Color(0xFF0D3D2A),
+                        const BoxShadow(
+                          color: Color(0xFF0D3D2A),
                           blurRadius: 120,
                           spreadRadius: 40,
                         ),
@@ -196,7 +197,12 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
                             child: _HeroPhotoPanel()
                                 .animate()
                                 .fadeIn(delay: 600.ms, duration: 900.ms)
-                                .slideX(begin: 0.15, end: 0, delay: 600.ms, duration: 900.ms, curve: Curves.easeOut),
+                                .slideX(
+                                    begin: 0.15,
+                                    end: 0,
+                                    delay: 600.ms,
+                                    duration: 900.ms,
+                                    curve: Curves.easeOut),
                           ),
                         ],
                       )
@@ -211,7 +217,7 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
           ),
 
           // ── Scroll Indicator ──────────────────────────────────
-          Positioned(
+          /*Positioned(
             bottom: 32,
             left: 0,
             right: 0,
@@ -230,15 +236,12 @@ class _HeroSectionState extends State<HeroSection> with TickerProviderStateMixin
                   _ScrollArrow(),
                 ],
               ),
-            )
-                .animate()
-                .fadeIn(delay: 1400.ms, duration: 800.ms),
-          ),
+            ).animate().fadeIn(delay: 1400.ms, duration: 800.ms),
+          ),*/
         ],
       ),
     );
   }
-
 }
 
 // ── Left column: all the text + CTA content ──────────────────────────────
@@ -263,7 +266,12 @@ class _HeroLeftContent extends StatelessWidget {
         _LiquidGlassCard()
             .animate()
             .fadeIn(delay: 200.ms, duration: 800.ms)
-            .slideY(begin: -0.3, end: 0, delay: 200.ms, duration: 800.ms, curve: Curves.easeOut),
+            .slideY(
+                begin: -0.3,
+                end: 0,
+                delay: 200.ms,
+                duration: 800.ms,
+                curve: Curves.easeOut),
 
         const SizedBox(height: 16),
 
@@ -276,7 +284,10 @@ class _HeroLeftContent extends StatelessWidget {
             letterSpacing: 2.5,
             fontWeight: FontWeight.w600,
           ),
-        ).animate().fadeIn(delay: 400.ms, duration: 600.ms).slideX(begin: -0.1, end: 0, delay: 400.ms),
+        )
+            .animate()
+            .fadeIn(delay: 400.ms, duration: 600.ms)
+            .slideX(begin: -0.1, end: 0, delay: 400.ms),
 
         const SizedBox(height: 20),
 
@@ -285,7 +296,7 @@ class _HeroLeftContent extends StatelessWidget {
           TextSpan(
             children: [
               TextSpan(
-                text: 'LAUNCH YOUR\n',
+                text: 'CODE. \n',
                 style: GoogleFonts.playfairDisplay(
                   fontSize: fontSize,
                   fontWeight: FontWeight.w900,
@@ -295,7 +306,7 @@ class _HeroLeftContent extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: 'FLUTTER\n',
+                text: 'CREATE. \n',
                 style: GoogleFonts.playfairDisplay(
                   fontSize: fontSize,
                   fontWeight: FontWeight.w900,
@@ -306,7 +317,7 @@ class _HeroLeftContent extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: 'CAREER',
+                text: 'CONQUER',
                 style: GoogleFonts.playfairDisplay(
                   fontSize: fontSize,
                   fontWeight: FontWeight.w900,
@@ -327,10 +338,12 @@ class _HeroLeftContent extends StatelessWidget {
               ),
             ],
           ),
-        )
-            .animate()
-            .fadeIn(delay: 500.ms, duration: 800.ms)
-            .slideY(begin: 0.15, end: 0, delay: 500.ms, duration: 800.ms, curve: Curves.easeOut),
+        ).animate().fadeIn(delay: 500.ms, duration: 800.ms).slideY(
+            begin: 0.15,
+            end: 0,
+            delay: 500.ms,
+            duration: 800.ms,
+            curve: Curves.easeOut),
 
         const SizedBox(height: 28),
 
@@ -447,7 +460,7 @@ class _HeroPhotoPanel extends StatelessWidget {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Color(0xFF0E1512).withOpacity(0.85),
+                            const Color(0xFF0E1512).withOpacity(0.85),
                             Colors.transparent,
                           ],
                         ),
@@ -619,66 +632,68 @@ class _LiquidGlassCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(13),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: const Color(0xFF5ED29C).withOpacity(0.15),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                '[ 2025 ]',
-                style: GoogleFonts.jetBrainsMono(
-                  fontSize: 10,
-                  color: const Color(0xFF5ED29C),
-                  letterSpacing: 1,
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF5ED29C).withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '[ Flutter Dev ]',
+                  style: GoogleFonts.jetBrainsMono(
+                    fontSize: 10,
+                    color: const Color(0xFF5ED29C),
+                    letterSpacing: 1,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Built by an\n',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+              const SizedBox(height: 10),
+              Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Built by \n',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: 'Industry',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 16,
-                      color: Colors.white,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w700,
+                    TextSpan(
+                      text: 'Saket',
+                      style: GoogleFonts.playfairDisplay(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: ' Engineer',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15,
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                    TextSpan(
+                      text: ' Jain',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Clean architecture · Firebase · Provider/BLoC',
-              style: GoogleFonts.dmSans(
-                fontSize: 10,
-                color: Colors.white.withOpacity(0.45),
-                height: 1.5,
-              ),
-            ),
-          ],
+              /*const SizedBox(height: 8),*/
+              /*Text(
+                '  Clean architecture · Provider/BLoC',
+                style: GoogleFonts.dmSans(
+                  fontSize: 10,
+                  color: Colors.white.withOpacity(0.45),
+                  height: 1.5,
+                ),
+              ),*/
+            ],
+          ),
         ),
       ),
     );
@@ -690,7 +705,8 @@ class _CTAButton extends StatefulWidget {
   final bool isPrimary;
   final VoidCallback onTap;
 
-  const _CTAButton({required this.label, required this.isPrimary, required this.onTap});
+  const _CTAButton(
+      {required this.label, required this.isPrimary, required this.onTap});
 
   @override
   State<_CTAButton> createState() => _CTAButtonState();
@@ -717,7 +733,9 @@ class _CTAButtonState extends State<_CTAButton> {
             border: Border.all(
               color: widget.isPrimary
                   ? Colors.transparent
-                  : (_hovered ? const Color(0xFF5ED29C) : const Color(0x40FFFFFF)),
+                  : (_hovered
+                      ? const Color(0xFF5ED29C)
+                      : const Color(0x40FFFFFF)),
               width: 1,
             ),
           ),
@@ -729,7 +747,8 @@ class _CTAButtonState extends State<_CTAButton> {
                 style: GoogleFonts.spaceGrotesk(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color: widget.isPrimary ? const Color(0xFF070B0A) : Colors.white,
+                  color:
+                      widget.isPrimary ? const Color(0xFF070B0A) : Colors.white,
                   letterSpacing: 1.5,
                 ),
               ),
@@ -754,16 +773,19 @@ class _ScrollArrow extends StatefulWidget {
   State<_ScrollArrow> createState() => _ScrollArrowState();
 }
 
-class _ScrollArrowState extends State<_ScrollArrow> with SingleTickerProviderStateMixin {
+class _ScrollArrowState extends State<_ScrollArrow>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 1200))
       ..repeat(reverse: true);
-    _anim = Tween<double>(begin: 0, end: 6).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+    _anim = Tween<double>(begin: 0, end: 6)
+        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -778,7 +800,8 @@ class _ScrollArrowState extends State<_ScrollArrow> with SingleTickerProviderSta
       animation: _anim,
       builder: (_, __) => Transform.translate(
         offset: Offset(0, _anim.value),
-        child: Icon(Icons.keyboard_arrow_down, color: Colors.white.withOpacity(0.25), size: 20),
+        child: Icon(Icons.keyboard_arrow_down,
+            color: Colors.white.withOpacity(0.25), size: 20),
       ),
     );
   }

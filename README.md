@@ -121,7 +121,6 @@ All colors and typography are in `lib/theme/app_theme.dart`.
 |----------|----------|-------|
 | Android  | ✅       | Requires internet permission |
 | iOS      | ✅       | Requires NSAppTransportSecurity |
-| Web      | ⚠️       | video_player has limited HLS support on web; fallback dark bg shows |
 | Desktop  | ✅       | Full layout with grid lines |
 
 > If HLS video fails to load on any platform, the app gracefully falls back to the dark background — no crashes.

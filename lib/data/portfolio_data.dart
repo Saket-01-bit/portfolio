@@ -46,7 +46,7 @@ class PortfolioData {
   static const List<Project> projects = [
     Project(
       name: 'HabitHero',
-      role: 'Lead Developer',
+      role: 'Sole Developer',
       period: 'June 2025 – Present',
       tagline: 'Cross-Platform Habit Tracker',
       description:
@@ -65,7 +65,7 @@ class PortfolioData {
     ),
     Project(
       name: 'Romi',
-      role: 'Developer',
+      role: 'Sole Developer',
       period: 'Aug 2025 – Present',
       tagline: 'AI-Powered Personal Assistant',
       description:
@@ -80,6 +80,23 @@ class PortfolioData {
       tags: ['Flutter', 'Groq API', 'NLP', 'Voice UI'],
       accentColor: 0xFF4FC3F7,
     ),
+    Project(
+      name: 'Flutter Portfolio',
+      role: 'Sole Developer',
+      period: 'May 2026 – Present',
+      tagline: 'Personal Portfolio App',
+      description:
+          'Designed a Flutter portfolio app showcasing projects, skills, and certifications. '
+          'Implemented responsive UI with Material Design 3 principles.',
+      bullets: [
+        'Showcased projects with dynamic data models',
+        'Implemented responsive design for multiple screen sizes',
+        'Used Material Design 3 for modern UI/UX',
+      ],
+      github: 'https://saketjain.vercel.app',
+        tags: [],
+        accentColor: 0xFF5ED29C,
+    )
   ];
 
   static const List<Certificate> certifications = [

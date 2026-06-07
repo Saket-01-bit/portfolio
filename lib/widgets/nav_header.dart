@@ -69,7 +69,6 @@ class _NavHeaderState extends State<NavHeader> with TickerProviderStateMixin {
                     bottom: BorderSide(color: Color(0x1AFFFFFF), width: 1))
                 : const Border(),
           ),
-          child: SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: isDesktop ? 80 : 24,
@@ -108,7 +107,6 @@ class _NavHeaderState extends State<NavHeader> with TickerProviderStateMixin {
                 ],
               ),
             ),
-          ),
         ),
 
         // ── Mobile Full-Screen Menu Overlay ──────────────────────

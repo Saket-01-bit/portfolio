@@ -141,7 +141,7 @@ class ContactSection extends StatelessWidget {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.description_outlined,
                                     size: 18,
                                     color: AppColors.accent,
@@ -166,7 +166,7 @@ class ContactSection extends StatelessWidget {
                       const SizedBox(height: 64),
 
                       // Social links
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _SocialLink(
@@ -174,13 +174,13 @@ class ContactSection extends StatelessWidget {
                             icon: Icons.code,
                             url: PortfolioData.github,
                           ),
-                          const SizedBox(width: 32),
+                          SizedBox(width: 32),
                           _SocialLink(
                             label: 'LINKEDIN',
                             icon: Icons.link,
                             url: PortfolioData.linkedin,
                           ),
-                          const SizedBox(width: 32),
+                          SizedBox(width: 32),
                           _SocialLink(
                             label: 'EMAIL',
                             icon: Icons.email_outlined,
@@ -205,14 +205,14 @@ class ContactSection extends StatelessWidget {
                     mainAxisAlignment:
                     MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      /*Text(
                         '© 2025 Saket Jain',
                         style: GoogleFonts.jetBrainsMono(
                           fontSize: 10,
                           color: Colors.white.withOpacity(0.25),
                           letterSpacing: 1,
                         ),
-                      ),
+                      ),*/
                       Text(
                         'BUILT WITH FLUTTER',
                         style: GoogleFonts.jetBrainsMono(

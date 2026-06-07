@@ -8,7 +8,7 @@ class PortfolioData {
   static const github = 'https://github.com/Saket-01-bit';
   static const linkedin = 'https://linkedin.com/in/saket-jain-cgc';
   static const String resume =
-      "https://drive.google.com/file/d/1JaJDhYEV4kSRf8Emh2IAGKTX7QoveGhh/view?usp=drive_link";
+      "https://drive.google.com/file/d/1TJrhEXclyE09x_7aV_zX-aFfzKxbe1Cr/view?usp=sharing";
 
   static const summary =
       'Results-driven Flutter Developer with hands-on experience shipping cross-platform mobile apps. '

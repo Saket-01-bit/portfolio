@@ -281,9 +281,9 @@ class _SideInfo extends StatelessWidget {
                 runSpacing: 8,
                 children: PortfolioData.highSchoolEducation.coursework
                     .map((c) => AccentTag(
-                  text: c,
-                  color: Colors.white.withOpacity(0.4),
-                ))
+                          text: c,
+                          color: Colors.white.withOpacity(0.4),
+                        ))
                     .toList(),
               ),
             ],
@@ -316,6 +316,7 @@ class _LeadershipCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
@@ -327,28 +328,34 @@ class _LeadershipCard extends StatelessWidget {
                       size: 18, color: AppColors.accent),
                 ),
                 const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      PortfolioData.leadership.role,
-                      style: GoogleFonts.spaceGrotesk(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                Expanded(
+                  // ← wrap Column in Expanded
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        PortfolioData.leadership.role,
+                        style: GoogleFonts.spaceGrotesk(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    Text(
-                      PortfolioData.leadership.organization,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 13,
-                        color: AppColors.accent.withOpacity(0.7),
+                      const SizedBox(height: 4),
+                      Text(
+                        PortfolioData.leadership.organization,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 13,
+                          color: AppColors.accent.withOpacity(0.7),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      AccentTag(
+                          text:
+                              PortfolioData.leadership.period), // ← moved here
+                    ],
+                  ),
                 ),
-                const Spacer(),
-                AccentTag(text: PortfolioData.leadership.period),
               ],
             ),
             const SizedBox(height: 24),

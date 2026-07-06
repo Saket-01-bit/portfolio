@@ -6,31 +6,29 @@ import '../theme/app_theme.dart';
 class NavHeader extends StatefulWidget {
   final ScrollController scrollController;
   final Map<String, VoidCallback> navActions;
+  final bool menuOpen;
+  final VoidCallback onMenuToggle;
 
   const NavHeader({
     super.key,
     required this.scrollController,
     required this.navActions,
+    required this.menuOpen,
+    required this.onMenuToggle,
   });
 
   @override
   State<NavHeader> createState() => _NavHeaderState();
 }
 
-class _NavHeaderState extends State<NavHeader> with TickerProviderStateMixin {
-  bool _menuOpen = false;
+class _NavHeaderState extends State<NavHeader> {
   bool _scrolled = false;
-  late AnimationController _menuCtrl;
-  late Animation<double> _menuAnim;
 
   static const _navItems = ['PROJECTS', 'SKILLS', 'ABOUT', 'RESUME'];
 
   @override
   void initState() {
     super.initState();
-    _menuCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 350));
-    _menuAnim = CurvedAnimation(parent: _menuCtrl, curve: Curves.easeInOut);
     widget.scrollController.addListener(_onScroll);
   }
 
@@ -39,14 +37,8 @@ class _NavHeaderState extends State<NavHeader> with TickerProviderStateMixin {
     if (scrolled != _scrolled) setState(() => _scrolled = scrolled);
   }
 
-  void _toggleMenu() {
-    setState(() => _menuOpen = !_menuOpen);
-    _menuOpen ? _menuCtrl.forward() : _menuCtrl.reverse();
-  }
-
   @override
   void dispose() {
-    _menuCtrl.dispose();
     widget.scrollController.removeListener(_onScroll);
     super.dispose();
   }
@@ -55,125 +47,115 @@ class _NavHeaderState extends State<NavHeader> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
 
-    return Stack(
-      children: [
-        // ── Main Header Bar ──────────────────────────────────────
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          decoration: BoxDecoration(
-            color: _scrolled
-                ? AppColors.background.withOpacity(0.95)
-                : Colors.transparent,
-            border: _scrolled
-                ? const Border(
-                    bottom: BorderSide(color: Color(0x1AFFFFFF), width: 1))
-                : const Border(),
-          ),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: isDesktop ? 80 : 24,
-                vertical: 20,
-              ),
-              child: Row(
-                children: [
-                  // Logo
-                  _Logo().animate().fadeIn(duration: 600.ms),
-
-                  const Spacer(),
-
-                  // Desktop Nav
-                  if (isDesktop) ...[
-                    ..._navItems.map((item) => _NavLink(
-                          label: item,
-                          onTap: widget.navActions[item],
-                        )),
-                    const SizedBox(width: 24),
-                    _ContactButton(),
-                  ] else ...[
-                    // Hamburger
-                    GestureDetector(
-                      onTap: _toggleMenu,
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Icon(
-                          _menuOpen ? Icons.close : Icons.menu,
-                          key: ValueKey(_menuOpen),
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        color: _scrolled
+            ? AppColors.background.withOpacity(0.95)
+            : Colors.transparent,
+        border: _scrolled
+            ? const Border(
+            bottom: BorderSide(color: Color(0x1AFFFFFF), width: 1))
+            : const Border(),
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: isDesktop ? 80 : 24,
+          vertical: 20,
         ),
-
-        // ── Mobile Full-Screen Menu Overlay ──────────────────────
-        if (!isDesktop)
-            AnimatedBuilder(
-              animation: _menuAnim,
-              builder: (_, __) {
-                if (_menuAnim.value == 0) return const SizedBox.shrink();
-                return Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0, // ✅ was: -MediaQuery.of(context).size.height
-                  child: Opacity(
-                    opacity: _menuAnim.value,
-                    child: Container(
-                      color: AppColors.background
-                          .withOpacity(0.97), // ✅ removed redundant height
-                      child: SafeArea(
-                        child: Padding(
-                          padding: const EdgeInsets.all(32),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: _navItems.asMap().entries.map((entry) {
-                              // ✅ stagger via _menuAnim directly, no TweenAnimationBuilder restart
-                              final stagger =
-                                  ((entry.key * 0.15) - (1 - _menuAnim.value))
-                                      .clamp(0.0, 1.0);
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _toggleMenu();
-                                    widget.navActions[entry.value]?.call();
-                                  },
-                                  child: Opacity(
-                                    opacity: stagger,
-                                    child: Transform.translate(
-                                      offset: Offset((1 - stagger) * 30, 0),
-                                      child: Text(
-                                        entry.value,
-                                        style: GoogleFonts.playfairDisplay(
-                                          fontSize: 36,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                          letterSpacing: -1,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ),
+        child: Row(
+          children: [
+            _Logo().animate().fadeIn(duration: 600.ms),
+            const Spacer(),
+            if (isDesktop) ...[
+              ..._navItems.map((item) => _NavLink(
+                label: item,
+                onTap: widget.navActions[item],
+              )),
+              const SizedBox(width: 24),
+              _ContactButton(),
+            ] else ...[
+              GestureDetector(
+                onTap: widget.onMenuToggle,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    widget.menuOpen ? Icons.close : Icons.menu,
+                    key: ValueKey(widget.menuOpen),
+                    color: Colors.white,
+                    size: 24,
                   ),
-                );
-              },
-            ),
-      ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
+
+// ── Mobile menu overlay — used by HomeScreen directly ─────────────────────
+
+class MobileMenuOverlay extends StatelessWidget {
+  final Map<String, VoidCallback> navActions;
+  final VoidCallback onClose;
+
+  static const _navItems = ['PROJECTS', 'SKILLS', 'ABOUT', 'RESUME'];
+
+  const MobileMenuOverlay({
+    super.key,
+    required this.navActions,
+    required this.onClose,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.background.withOpacity(0.97),
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: _navItems.asMap().entries.map((entry) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: GestureDetector(
+                onTap: () {
+                  onClose();
+                  navActions[entry.value]?.call();
+                },
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: 1.0),
+                  duration: Duration(milliseconds: 200 + entry.key * 60),
+                  builder: (_, v, child) => Opacity(
+                    opacity: v,
+                    child: Transform.translate(
+                      offset: Offset((1 - v) * 30, 0),
+                      child: child,
+                    ),
+                  ),
+                  child: Text(
+                    entry.value,
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -1,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Shared widgets ─────────────────────────────────────────────────────────
 
 class _Logo extends StatelessWidget {
   @override
@@ -240,8 +222,9 @@ class _NavLinkState extends State<_NavLink> {
             style: GoogleFonts.spaceGrotesk(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color:
-                  _hovered ? AppColors.accent : Colors.white.withOpacity(0.6),
+              color: _hovered
+                  ? AppColors.accent
+                  : Colors.white.withOpacity(0.6),
               letterSpacing: 1.5,
             ),
             child: Text(widget.label),
@@ -272,7 +255,9 @@ class _ContactButtonState extends State<_ContactButton> {
           color: _hovered ? AppColors.accent : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
-            color: _hovered ? AppColors.accent : Colors.white.withOpacity(0.25),
+            color: _hovered
+                ? AppColors.accent
+                : Colors.white.withOpacity(0.25),
             width: 1,
           ),
         ),

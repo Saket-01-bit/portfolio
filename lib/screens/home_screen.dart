@@ -16,11 +16,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _scrollController = ScrollController();
-
   final _projectsKey = GlobalKey();
   final _skillsKey   = GlobalKey();
   final _aboutKey    = GlobalKey();
   final _contactKey  = GlobalKey();
+  bool _menuOpen     = false;
 
   void _scrollToKey(GlobalKey key) {
     final ctx = key.currentContext;
@@ -31,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
       curve: Curves.easeInOut,
     );
   }
+
+  void _toggleMenu() => setState(() => _menuOpen = !_menuOpen);
 
   @override
   void dispose() {
@@ -50,30 +52,45 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            // Nav takes its natural height, content starts below it
-            NavHeader(
-              scrollController: _scrollController,
-              navActions: navActions,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: Column(
-                  children: [
-                    HeroSection(
-                      onViewProjects: () => _scrollToKey(_projectsKey),
-                      onContact:      () => _scrollToKey(_contactKey),
+            // ── 1. Main layout ──────────────────────────────────
+            Column(
+              children: [
+                NavHeader(
+                  scrollController: _scrollController,
+                  navActions: navActions,
+                  menuOpen: _menuOpen,
+                  onMenuToggle: _toggleMenu,
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    child: Column(
+                      children: [
+                        HeroSection(
+                          onViewProjects: () => _scrollToKey(_projectsKey),
+                          onContact:      () => _scrollToKey(_contactKey),
+                        ),
+                        ProjectsSection(key: _projectsKey),
+                        SkillsSection(key: _skillsKey),
+                        AboutSection(key: _aboutKey),
+                        ContactSection(key: _contactKey),
+                      ],
                     ),
-                    ProjectsSection(key: _projectsKey),
-                    SkillsSection(key: _skillsKey),
-                    AboutSection(key: _aboutKey),
-                    ContactSection(key: _contactKey),
-                  ],
+                  ),
+                ),
+              ],
+            ),
+
+            // ── 2. Full-screen menu overlay — last = renders on top ──
+            if (_menuOpen)
+              Positioned.fill(
+                child: MobileMenuOverlay(
+                  navActions: navActions,
+                  onClose: _toggleMenu,
                 ),
               ),
-            ),
           ],
         ),
       ),

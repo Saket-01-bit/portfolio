@@ -338,14 +338,30 @@ class _MobileProjectPagerState extends State<_MobileProjectPager> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Card is 70% of screen height — tall enough for all content,
+    // small enough to always fit on screen without breaking layout
+    final cardHeight = screenHeight * 0.70;
+
     return Column(
       children: [
-        // Wrap in IntrinsicHeight inside a SingleChildScrollView-safe approach:
-        // Render all cards in an Offstage stack to measure, then size PageView
-        _SizedPageView(
-          controller: _pageController,
-          projects: widget.projects,
-          onPageChanged: (i) => setState(() => _currentPage = i),
+        SizedBox(
+          height: cardHeight,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: widget.projects.length,
+            onPageChanged: (i) => setState(() => _currentPage = i),
+            itemBuilder: (context, index) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: _ScrollableProjectCard(
+                  project: widget.projects[index],
+                  height: cardHeight,
+                ),
+              );
+            },
+          ),
         ),
 
         const SizedBox(height: 20),
@@ -383,101 +399,175 @@ class _MobileProjectPagerState extends State<_MobileProjectPager> {
   }
 }
 
-class _SizedPageView extends StatefulWidget {
-  final PageController controller;
-  final List<Project> projects;
-  final ValueChanged<int> onPageChanged;
-
-  const _SizedPageView({
-    required this.controller,
-    required this.projects,
-    required this.onPageChanged,
+class _ScrollableProjectCard extends StatefulWidget {
+  final Project project;
+  final double height;
+  const _ScrollableProjectCard({
+    required this.project,
+    required this.height,
   });
 
   @override
-  State<_SizedPageView> createState() => _SizedPageViewState();
+  State<_ScrollableProjectCard> createState() => _ScrollableProjectCardState();
 }
 
-class _SizedPageViewState extends State<_SizedPageView> {
-  final List<double> _heights = [];
-  int _currentPage = 0;
-
-  double get _currentHeight {
-    if (_heights.isEmpty) return 600; // fallback
-    if (_currentPage >= _heights.length) return _heights.last;
-    return _heights[_currentPage];
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _heights.addAll(List.filled(widget.projects.length, 0));
-    widget.controller.addListener(() {
-      final page = widget.controller.page?.round() ?? 0;
-      if (page != _currentPage) {
-        setState(() => _currentPage = page);
-      }
-    });
-  }
-
-  void _onHeightMeasured(int index, double height) {
-    if (_heights[index] != height) {
-      setState(() => _heights[index] = height);
-    }
-  }
+class _ScrollableProjectCardState extends State<_ScrollableProjectCard> {
+  bool _hovered = false;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-      height: _currentHeight == 0 ? 600 : _currentHeight,
-      child: PageView.builder(
-        controller: widget.controller,
-        itemCount: widget.projects.length,
-        onPageChanged: (i) {
-          setState(() => _currentPage = i);
-          widget.onPageChanged(i);
-        },
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: _MeasuredCard(
-              project: widget.projects[index],
-              onHeight: (h) => _onHeightMeasured(index, h),
+    final accent = Color(widget.project.accentColor);
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _hovered = true),
+      onExit: (_) => setState(() => _hovered = false),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        height: widget.height,
+        decoration: BoxDecoration(
+          color: _hovered
+              ? const Color(0x1AFFFFFF)
+              : const Color(0x0DFFFFFF),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: _hovered
+                ? accent.withOpacity(0.4)
+                : const Color(0x1AFFFFFF),
+          ),
+          boxShadow: _hovered
+              ? [
+            BoxShadow(
+              color: accent.withOpacity(0.08),
+              blurRadius: 40,
+              offset: const Offset(0, 8),
             ),
-          );
-        },
+          ]
+              : [],
+        ),
+        // ── SingleChildScrollView makes content scrollable
+        //    inside the fixed card height ──────────────────
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AccentTag(
+                    text: widget.project.role.toUpperCase(),
+                    color: accent,
+                  ),
+                  GestureDetector(
+                    onTap: () => launchUrl(Uri.parse(widget.project.github)),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.1)),
+                      ),
+                      child: Icon(
+                        Icons.open_in_new,
+                        size: 14,
+                        color: Colors.white.withOpacity(0.6),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Project name
+              Text(
+                widget.project.name,
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // Tagline
+              Text(
+                widget.project.tagline,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  color: accent.withOpacity(0.8),
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Description
+              Text(
+                widget.project.description,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  color: Colors.white.withOpacity(0.55),
+                  height: 1.7,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Bullets
+              ...widget.project.bullets.map((b) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 7, right: 10),
+                      width: 4,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: accent,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        b,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.65),
+                          height: 1.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 24),
+
+              // Tags
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: widget.project.tags
+                    .map((t) => AccentTag(text: t, color: accent))
+                    .toList(),
+              ),
+              const SizedBox(height: 20),
+
+              // Period
+              Text(
+                widget.project.period,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white.withOpacity(0.25),
+                  letterSpacing: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
-  }
-}
-
-class _MeasuredCard extends StatefulWidget {
-  final Project project;
-  final ValueChanged<double> onHeight;
-  const _MeasuredCard({required this.project, required this.onHeight});
-
-  @override
-  State<_MeasuredCard> createState() => _MeasuredCardState();
-}
-
-class _MeasuredCardState extends State<_MeasuredCard> {
-  final _key = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
-  }
-
-  void _measure() {
-    final box = _key.currentContext?.findRenderObject() as RenderBox?;
-    if (box != null) widget.onHeight(box.size.height);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _ProjectCard(key: _key, project: widget.project);
   }
 }

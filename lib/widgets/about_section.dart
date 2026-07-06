@@ -250,14 +250,14 @@ class _SideInfo extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              /*Text(
                 PortfolioData.highSchoolEducation.period,
                 style: GoogleFonts.jetBrainsMono(
                   fontSize: 10,
                   color: Colors.white.withOpacity(0.3),
                   letterSpacing: 0.5,
                 ),
-              ),
+              ),*/
               const SizedBox(height: 12),
               /*Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

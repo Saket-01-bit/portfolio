@@ -153,29 +153,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
               },
             )
           else
-            SizedBox(
-              height: 520,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                clipBehavior: Clip.none,
-                padding: EdgeInsets.zero,
-                itemCount: filtered.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      right: index == filtered.length - 1 ? 0 : 16,
-                    ),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.82,
-                      child: RevealOnScroll(
-                        delay: Duration(milliseconds: 150 * index),
-                        child: _ProjectCard(project: filtered[index]),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+      _MobileProjectPager(projects: filtered),
         ],
       ),
     );
@@ -186,7 +164,7 @@ class _ProjectsSectionState extends State<ProjectsSection> {
 
 class _ProjectCard extends StatefulWidget {
   final Project project;
-  const _ProjectCard({required this.project});
+  const _ProjectCard({super.key, required this.project});  // ← add super.key
 
   @override
   State<_ProjectCard> createState() => _ProjectCardState();
@@ -331,5 +309,175 @@ class _ProjectCardState extends State<_ProjectCard> {
         ),
       ),
     );
+  }
+}
+
+class _MobileProjectPager extends StatefulWidget {
+  final List<Project> projects;
+  const _MobileProjectPager({required this.projects});
+
+  @override
+  State<_MobileProjectPager> createState() => _MobileProjectPagerState();
+}
+
+class _MobileProjectPagerState extends State<_MobileProjectPager> {
+  int _currentPage = 0;
+  late final PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.88);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        // Wrap in IntrinsicHeight inside a SingleChildScrollView-safe approach:
+        // Render all cards in an Offstage stack to measure, then size PageView
+        _SizedPageView(
+          controller: _pageController,
+          projects: widget.projects,
+          onPageChanged: (i) => setState(() => _currentPage = i),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Dot indicators
+        if (widget.projects.length > 1)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(widget.projects.length, (i) {
+              final isActive = i == _currentPage;
+              final accent = Color(widget.projects[i].accentColor);
+              return GestureDetector(
+                onTap: () => _pageController.animateToPage(
+                  i,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeInOut,
+                ),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  width: isActive ? 20 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? accent
+                        : Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              );
+            }),
+          ),
+      ],
+    );
+  }
+}
+
+class _SizedPageView extends StatefulWidget {
+  final PageController controller;
+  final List<Project> projects;
+  final ValueChanged<int> onPageChanged;
+
+  const _SizedPageView({
+    required this.controller,
+    required this.projects,
+    required this.onPageChanged,
+  });
+
+  @override
+  State<_SizedPageView> createState() => _SizedPageViewState();
+}
+
+class _SizedPageViewState extends State<_SizedPageView> {
+  final List<double> _heights = [];
+  int _currentPage = 0;
+
+  double get _currentHeight {
+    if (_heights.isEmpty) return 600; // fallback
+    if (_currentPage >= _heights.length) return _heights.last;
+    return _heights[_currentPage];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _heights.addAll(List.filled(widget.projects.length, 0));
+    widget.controller.addListener(() {
+      final page = widget.controller.page?.round() ?? 0;
+      if (page != _currentPage) {
+        setState(() => _currentPage = page);
+      }
+    });
+  }
+
+  void _onHeightMeasured(int index, double height) {
+    if (_heights[index] != height) {
+      setState(() => _heights[index] = height);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+      height: _currentHeight == 0 ? 600 : _currentHeight,
+      child: PageView.builder(
+        controller: widget.controller,
+        itemCount: widget.projects.length,
+        onPageChanged: (i) {
+          setState(() => _currentPage = i);
+          widget.onPageChanged(i);
+        },
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: _MeasuredCard(
+              project: widget.projects[index],
+              onHeight: (h) => _onHeightMeasured(index, h),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MeasuredCard extends StatefulWidget {
+  final Project project;
+  final ValueChanged<double> onHeight;
+  const _MeasuredCard({required this.project, required this.onHeight});
+
+  @override
+  State<_MeasuredCard> createState() => _MeasuredCardState();
+}
+
+class _MeasuredCardState extends State<_MeasuredCard> {
+  final _key = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+  }
+
+  void _measure() {
+    final box = _key.currentContext?.findRenderObject() as RenderBox?;
+    if (box != null) widget.onHeight(box.size.height);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _ProjectCard(key: _key, project: widget.project);
   }
 }

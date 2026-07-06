@@ -202,8 +202,8 @@ class ContactSection extends StatelessWidget {
                     Border(top: BorderSide(color: Color(0x14FFFFFF))),
                   ),
                   child: Row(
-                    mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    /*MainAxisAlignment.spaceBetween,*/
                     children: [
                       /*Text(
                         '© 2025 Saket Jain',
@@ -214,9 +214,21 @@ class ContactSection extends StatelessWidget {
                         ),
                       ),*/
                       Text(
+                        '-> ',
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 16,
+                          color:
+                            AppColors.accent.withOpacity(0.5),
+                          letterSpacing: 1.5,
+
+                        )
+                      ),
+                      Text(
                         'BUILT WITH FLUTTER',
                         style: GoogleFonts.jetBrainsMono(
-                          fontSize: 10,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          decorationColor: AppColors.accent,
                           color:
                           AppColors.accent.withOpacity(0.5),
                           letterSpacing: 1.5,

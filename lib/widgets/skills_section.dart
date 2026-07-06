@@ -22,7 +22,6 @@ class SkillsSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionDivider(label: '03 — SKILLS'),
-
           RevealOnScroll(
             child: Text(
               'TECHNICAL\nARSENAL.',
@@ -35,9 +34,7 @@ class SkillsSection extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 60),
-
           if (isDesktop)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,7 +104,9 @@ class _SkillCategoryState extends State<_SkillCategory> {
           color: _hovered ? const Color(0x1AFFFFFF) : const Color(0x0AFFFFFF),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hovered ? AppColors.accent.withOpacity(0.3) : const Color(0x14FFFFFF),
+            color: _hovered
+                ? AppColors.accent.withOpacity(0.3)
+                : const Color(0x14FFFFFF),
             width: 1,
           ),
         ),
@@ -161,7 +160,7 @@ class _HighlightStats extends StatelessWidget {
   static const _stats = [
     ('15–30%', 'App performance improvement'),
     ('60fps', 'Consistent rendering'),
-    ('2', 'Production apps shipped'),
+    ('4', 'Production ready apps made'),
     ('800+', 'Students mentored as VP'),
   ];
 

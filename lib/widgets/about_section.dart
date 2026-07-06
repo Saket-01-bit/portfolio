@@ -20,7 +20,6 @@ class AboutSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SectionDivider(label: '04 — ABOUT'),
-
           if (isDesktop)
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +37,6 @@ class AboutSection extends StatelessWidget {
                 _SideInfo(),
               ],
             ),
-
           const SizedBox(height: 80),
           _LeadershipCard(),
           const SizedBox(height: 32),
@@ -92,9 +90,12 @@ class _AboutText extends StatelessWidget {
           const SizedBox(height: 32),
           Row(
             children: [
-              _ContactItem(icon: Icons.email_outlined, label: PortfolioData.email),
+              _ContactItem(
+                  icon: Icons.email_outlined, label: PortfolioData.email),
               const SizedBox(width: 24),
-              _ContactItem(icon: Icons.location_on_outlined, label: PortfolioData.location),
+              _ContactItem(
+                  icon: Icons.location_on_outlined,
+                  label: PortfolioData.location),
             ],
           ),
         ],
@@ -141,7 +142,8 @@ class _SideInfo extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.school_outlined, size: 16, color: AppColors.accent),
+                    const Icon(Icons.school_outlined,
+                        size: 16, color: AppColors.accent),
                     const SizedBox(width: 8),
                     Text(
                       'EDUCATION',
@@ -180,7 +182,7 @@ class _SideInfo extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Container(
+                /*Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: AppColors.accent.withOpacity(0.1),
@@ -196,7 +198,7 @@ class _SideInfo extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 16),*/
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -210,6 +212,82 @@ class _SideInfo extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 8),
+          GlassCard(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.school_rounded,
+                      size: 16, color: AppColors.accent),
+                  const SizedBox(width: 8),
+                  Text(
+                    'HIGH SCHOOL EDUCATION',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 10,
+                      color: AppColors.accent,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                PortfolioData.highSchoolEducation.degree,
+                style: GoogleFonts.spaceGrotesk(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                PortfolioData.highSchoolEducation.institution,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  color: Colors.white.withOpacity(0.55),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                PortfolioData.highSchoolEducation.period,
+                style: GoogleFonts.jetBrainsMono(
+                  fontSize: 10,
+                  color: Colors.white.withOpacity(0.3),
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 12),
+              /*Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.accent.withOpacity(0.25)),
+                  ),
+                  child: Text(
+                    'CGPA: ${PortfolioData.highSchoolEducation.cgpa}',
+                    style: GoogleFonts.jetBrainsMono(
+                      fontSize: 12,
+                      color: AppColors.accent,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),*/
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: PortfolioData.highSchoolEducation.coursework
+                    .map((c) => AccentTag(
+                  text: c,
+                  color: Colors.white.withOpacity(0.4),
+                ))
+                    .toList(),
+              ),
+            ],
+          ))
         ],
       ),
     );
@@ -245,7 +323,8 @@ class _LeadershipCard extends StatelessWidget {
                     color: AppColors.accent.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.groups_outlined, size: 18, color: AppColors.accent),
+                  child: const Icon(Icons.groups_outlined,
+                      size: 18, color: AppColors.accent),
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -367,7 +446,8 @@ class _CertCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: AppColors.accent.withOpacity(0.2)),
             ),
-            child: const Icon(Icons.verified_outlined, size: 16, color: AppColors.accent),
+            child: const Icon(Icons.verified_outlined,
+                size: 16, color: AppColors.accent),
           ),
           const SizedBox(width: 14),
           Expanded(

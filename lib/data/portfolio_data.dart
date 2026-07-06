@@ -24,7 +24,7 @@ class PortfolioData {
     ),
     SkillCategory(
       label: 'STATE MGMT',
-      items: ['Provider', 'BLoC', 'Riverpod', 'setState'],
+      items: ['Provider', 'BLoC', 'Riverpod', 'GetX'],
     ),
     SkillCategory(
       label: 'BACKEND',
@@ -36,7 +36,7 @@ class PortfolioData {
     ),
     SkillCategory(
       label: 'TOOLS',
-      items: ['Android Studio', 'VS Code', 'Git', 'GitHub', 'Postman'],
+      items: ['Android Studio', 'VS Code', 'Git', 'GitHub'],
     ),
     SkillCategory(
       label: 'CS CORE',
@@ -48,6 +48,7 @@ class PortfolioData {
     Project(
       name: 'HabitHero',
       role: 'Sole Developer',
+      category: 'flutter',
       period: 'June 2025 – Present',
       tagline: 'Cross-Platform Habit Tracker',
       description:
@@ -66,6 +67,7 @@ class PortfolioData {
     Project(
       name: 'Romi',
       role: 'Sole Developer',
+      category: 'flutter',
       period: 'Aug 2025 – Present',
       tagline: 'AI-Powered Personal Assistant',
       description:
@@ -83,6 +85,7 @@ class PortfolioData {
     Project(
       name: 'Flutter Portfolio',
       role: 'Sole Developer',
+      category: 'flutter',
       period: 'May 2026 – Present',
       tagline: 'Personal Portfolio App',
       description:
@@ -100,6 +103,7 @@ class PortfolioData {
     Project(
       name: 'WARDROBE_AI',
       role: 'Developer',
+      category: 'flutter',
       period: 'June 2026-Present',
       tagline: 'AI-Powered Outfit Recommender',
       description:
@@ -112,6 +116,54 @@ class PortfolioData {
       github: 'https://github.com/Saket-01-bit/wardrobe_ai',
       accentColor: 0xFF4FC3F7,
       tags: ['Flutter', 'Local Machine Model'],
+    ),
+    Project(
+      name: 'Food Ordering System',
+      role: 'Java Developer',
+      category: 'java',
+      //period: '2025',
+      tagline: 'Console-Based Restaurant Ordering System',
+      description:
+          'Developed a console-based food ordering application in Java that enables menu browsing, food customization, shopping cart management, checkout, and order history while demonstrating object-oriented design principles and software design patterns.',
+      bullets: [
+        'Implemented the Prototype pattern for efficient menu item cloning and customization.',
+        'Applied the Template Method pattern to enable reusable and extensible food item behavior.',
+        'Built menu browsing, cart management, checkout, and order history workflows.',
+        'Designed a modular object-oriented architecture for maintainable code.',
+      ],
+      github: 'https://github.com/Saket-01-bit/Food-Ordering-System',
+      tags: [
+        'Java',
+        'OOP',
+        'Prototype Pattern',
+        'Template Method',
+        'Design Patterns'
+      ],
+      accentColor: 0xFFF4A261,
+    ),
+    Project(
+      name: 'Ride Sharing System',
+      role: 'Java Developer',
+      category: 'java',
+      //period: '2025',
+      tagline: 'Console-Based Ride Booking & Management System',
+      description:
+      'Developed a backend-style ride-sharing system in Java that simulates rider-driver matching, dynamic fare calculation, ride lifecycle management, and ratings using object-oriented design principles and the Strategy design pattern.',
+      bullets: [
+        'Implemented the Strategy pattern for dynamic normal and surge fare calculation.',
+        'Designed a layered architecture with services, models, strategies, and custom exceptions.',
+        'Built ride matching, ETA estimation, ride lifecycle, ratings, and ride history.',
+        'Enforced ride state transitions with robust exception handling.',
+      ],
+      github: 'https://github.com/Saket-01-bit/ride-sharing-system',
+      tags: [
+        'Java',
+        'OOP',
+        'Strategy Pattern',
+        'Design Patterns',
+        'Layered Architecture'
+      ],
+      accentColor: 0xFFF4A261,
     ),
   ];
 
@@ -134,6 +186,14 @@ class PortfolioData {
     period: 'Aug 2023 – Present',
     cgpa: '7.82 / 10',
     coursework: ['Data Structures', 'OOP', 'DBMS', 'Software Engineering'],
+  );
+
+  static const highSchoolEducation = Education(
+    degree: 'Senior Secondary — Science Stream',
+    institution: 'Government Model Senior Secondary School, Chandigarh',
+    period: 'Apr 2020 – Mar 2022',
+    cgpa: '',
+    coursework: ['Physics', 'Chemistry', 'Mathematics', 'Computer Science'],
   );
 
   static const leadership = Leadership(
@@ -164,16 +224,18 @@ class Project {
   final String github;
   final List<String> tags;
   final int accentColor;
+  final String category;
   const Project({
     required this.name,
     required this.role,
-    required this.period,
+    this.period = '',
     required this.tagline,
     required this.description,
     required this.bullets,
     required this.github,
     required this.tags,
     required this.accentColor,
+    this.category = 'flutter',
   });
 }
 

@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/portfolio_data.dart';
 import '../theme/app_theme.dart';
 import 'common_widgets.dart';
 
-class ProjectsSection extends StatelessWidget {
+class ProjectsSection extends StatefulWidget {
   const ProjectsSection({super.key});
+
+  @override
+  State<ProjectsSection> createState() => _ProjectsSectionState();
+}
+
+class _ProjectsSectionState extends State<ProjectsSection> {
+  String _activeTab = 'flutter';
+
+  static const _tabs = [
+    {'key': 'flutter', 'label': '⟨/⟩  FLUTTER'},
+    {'key': 'java',    'label': '☕  JAVA'},
+  ];
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = MediaQuery.of(context).size.width > 900;
+
+    final filtered = PortfolioData.projects
+        .where((p) => p.category == _activeTab)
+        .toList();
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -47,40 +62,127 @@ class ProjectsSection extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 60),
-          if (isDesktop)
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: PortfolioData.projects.asMap().entries.map((entry) {
-                final isLast = entry.key == PortfolioData.projects.length - 1;
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(right: isLast ? 0 : 20),
-                    child: RevealOnScroll(
-                      delay: Duration(milliseconds: 150 * entry.key),
-                      child: _ProjectCard(project: entry.value),
+          const SizedBox(height: 40),
+
+          // ── Tab switcher ────────────────────────────────────────
+          RevealOnScroll(
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.white.withOpacity(0.08)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: _tabs.map((tab) {
+                  final isActive = _activeTab == tab['key'];
+                  final accent = tab['key'] == 'flutter'
+                      ? AppColors.accent
+                      : const Color(0xFFF4A261);
+                  return GestureDetector(
+                    onTap: () => setState(() => _activeTab = tab['key']!),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeOut,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: isActive
+                            ? accent.withOpacity(0.12)
+                            : Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isActive
+                              ? accent.withOpacity(0.35)
+                              : Colors.transparent,
+                        ),
+                      ),
+                      child: Text(
+                        tab['label']!,
+                        style: GoogleFonts.jetBrainsMono(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 1.5,
+                          color: isActive
+                              ? accent
+                              : Colors.white.withOpacity(0.4),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // ── Project cards ────────────────────────────────────────
+          if (filtered.isEmpty)
+            RevealOnScroll(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 60),
+                  child: Text(
+                    'No projects yet — check back soon.',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.white.withOpacity(0.3),
                     ),
                   ),
+                ),
+              ),
+            )
+          else if (isDesktop)
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final cardWidth = (constraints.maxWidth - 20) / 2; // 2 per row, 20px gap
+                return Wrap(
+                  spacing: 20,
+                  runSpacing: 20,
+                  children: filtered.asMap().entries.map((entry) {
+                    return SizedBox(
+                      width: cardWidth,
+                      child: RevealOnScroll(
+                        delay: Duration(milliseconds: 150 * entry.key),
+                        child: _ProjectCard(project: entry.value),
+                      ),
+                    );
+                  }).toList(),
                 );
-              }).toList(),
+              },
             )
           else
-            Column(
-              children: PortfolioData.projects.asMap().entries.map((entry) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: RevealOnScroll(
-                    delay: Duration(milliseconds: 150 * entry.key),
-                    child: _ProjectCard(project: entry.value),
-                  ),
-                );
-              }).toList(),
+            SizedBox(
+              height: 520,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                clipBehavior: Clip.none,
+                padding: EdgeInsets.zero,
+                itemCount: filtered.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      right: index == filtered.length - 1 ? 0 : 16,
+                    ),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.82,
+                      child: RevealOnScroll(
+                        delay: Duration(milliseconds: 150 * index),
+                        child: _ProjectCard(project: filtered[index]),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
         ],
       ),
     );
   }
 }
+
+// ── Project card (unchanged from before) ──────────────────────────────────
 
 class _ProjectCard extends StatefulWidget {
   final Project project;
@@ -103,34 +205,38 @@ class _ProjectCardState extends State<_ProjectCard> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
-        transform: Matrix4.identity()..translate(0.0, _hovered ? -6.0 : 0.0),
+        transform: Matrix4.identity()
+          ..translate(0.0, _hovered ? -6.0 : 0.0),
         padding: const EdgeInsets.all(28),
         decoration: BoxDecoration(
-          color: _hovered ? const Color(0x1AFFFFFF) : const Color(0x0DFFFFFF),
+          color: _hovered
+              ? const Color(0x1AFFFFFF)
+              : const Color(0x0DFFFFFF),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: _hovered ? accent.withOpacity(0.4) : const Color(0x1AFFFFFF),
+            color: _hovered
+                ? accent.withOpacity(0.4)
+                : const Color(0x1AFFFFFF),
             width: 1,
           ),
           boxShadow: _hovered
               ? [
-                  BoxShadow(
-                    color: accent.withOpacity(0.08),
-                    blurRadius: 40,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
+            BoxShadow(
+              color: accent.withOpacity(0.08),
+              blurRadius: 40,
+              offset: const Offset(0, 8),
+            ),
+          ]
               : [],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header row
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AccentTag(text: widget.project.role.toUpperCase(), color: accent),
+                AccentTag(
+                    text: widget.project.role.toUpperCase(), color: accent),
                 GestureDetector(
                   onTap: () => launchUrl(Uri.parse(widget.project.github)),
                   child: Container(
@@ -138,16 +244,17 @@ class _ProjectCardState extends State<_ProjectCard> {
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.05),
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      border: Border.all(
+                          color: Colors.white.withOpacity(0.1)),
                     ),
-                    child: Icon(Icons.open_in_new, size: 14, color: Colors.white.withOpacity(0.6)),
+                    child: Icon(Icons.open_in_new,
+                        size: 14,
+                        color: Colors.white.withOpacity(0.6)),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 20),
-
-            // Project name
             Text(
               widget.project.name,
               style: GoogleFonts.playfairDisplay(
@@ -167,8 +274,6 @@ class _ProjectCardState extends State<_ProjectCard> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // Description
             Text(
               widget.project.description,
               style: GoogleFonts.dmSans(
@@ -178,39 +283,34 @@ class _ProjectCardState extends State<_ProjectCard> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Bullets
             ...widget.project.bullets.map((b) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 7, right: 10),
-                        width: 4,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: accent,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          b,
-                          style: GoogleFonts.dmSans(
-                            fontSize: 12,
-                            color: Colors.white.withOpacity(0.65),
-                            height: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 7, right: 10),
+                    width: 4,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: accent,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                )),
-
+                  Expanded(
+                    child: Text(
+                      b,
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        color: Colors.white.withOpacity(0.65),
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )),
             const SizedBox(height: 24),
-
-            // Tags
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -218,10 +318,7 @@ class _ProjectCardState extends State<_ProjectCard> {
                   .map((t) => AccentTag(text: t, color: accent))
                   .toList(),
             ),
-
             const SizedBox(height: 20),
-
-            // Period
             Text(
               widget.project.period,
               style: GoogleFonts.jetBrainsMono(

@@ -184,7 +184,7 @@ class PortfolioData {
     degree: 'B.Tech — Information Technology',
     institution: 'Chandigarh Engineering College, CGC Landran',
     period: 'Aug 2023 – Present',
-    cgpa: '7.82 / 10',
+    cgpa: '7.96 / 10',
     coursework: ['Data Structures', 'OOP', 'DBMS', 'Software Engineering'],
   );
 

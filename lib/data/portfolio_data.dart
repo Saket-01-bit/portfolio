@@ -165,6 +165,26 @@ class PortfolioData {
       ],
       accentColor: 0xFFF4A261,
     ),
+    Project(
+      name: 'Tic Tac Toe',
+      category: 'java',
+      role: 'Developer',
+      //period: 'July 2026',
+      tagline: 'Console-Based Strategy Game',
+      description:
+      'Built a console-based Tic Tac Toe game in Java with two game modes — '
+          'Player vs Player and Player vs Computer. '
+          'The AI opponent uses randomized move selection for unpredictable gameplay.',
+      bullets: [
+        'Implemented Player vs Player and Player vs Computer modes',
+        'Built AI opponent with randomized move logic',
+        'Designed clean board rendering with input validation and error handling',
+        'Applied OOP principles with modular class structure',
+      ],
+      github: 'https://github.com/Saket-01-bit/ticTacToe-Console-Based-',
+      tags: ['Java', 'OOP', 'Game Logic', 'Console App'],
+      accentColor: 0xFFF4A261,
+    ),
   ];
 
   static const List<Certificate> certifications = [
